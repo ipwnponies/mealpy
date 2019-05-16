@@ -232,12 +232,44 @@ def list_cities():
 @cli_list.command('restaurants', short_help='List available restaurants.')
 @click.argument('city')
 def cli_list_restaurants(city):  # pragma: no cover
-    restaurants = [i['restaurant']['name'] for i in MealPal.get_schedules(city)]
+    restaurants = [i['restaurant']['name'] for i in list_menu(city)]
     print('\n'.join(restaurants))
 
 
 @cli_list.command('meals', short_help='List meal choices.')
 @click.argument('city')
 def cli_list_meals(city):  # pragma: no cover
-    restaurants = [i['meal']['name'] for i in MealPal.get_schedules(city)]
+    restaurants = [i['meal']['name'] for i in list_menu(city)]
     print('\n'.join(restaurants))
+
+
+def list_menu(city):
+    """Return menu for the city.
+
+    If there is cached data available, it will be used. Data is cached separately per-city and has a TTL of 1 hour.
+    """
+    menu_file = CACHE_HOME / 'menu.json'
+
+    cached_data = {}
+    result = []
+
+    if menu_file.exists():
+        cached_data = json.load(menu_file.open())
+
+        city_data = cached_data.get(city)
+
+        if city_data:
+            cache_expire_date = pendulum.parse(city_data['run_date']).add(hours=1)
+
+            if pendulum.now() < cache_expire_date:
+                result = city_data['result']
+
+    if not result:
+        result = MealPal.get_schedules(city)
+        cached_data[city] = {
+            'run_date': str(pendulum.now()),
+            'result': result,
+        }
+        json.dump(cached_data, menu_file.open('w'))
+
+    return result
