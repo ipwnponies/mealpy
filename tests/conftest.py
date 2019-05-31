@@ -18,7 +18,7 @@ def mock_fs():
     modules_to_reload = [
         xdg,
         mealpy.config,
-        mealpy.mealpy,
+        mealpy.cli,
     ]
     modules_to_ignore = [
         pendulum,
