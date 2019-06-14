@@ -1,5 +1,3 @@
-import json
-
 import requests
 
 
@@ -11,30 +9,32 @@ MENU_URL = f'{BASE_URL}/api/v1/cities/{{}}/product_offerings/lunch/menu'
 RESERVATION_URL = f'{BASE_URL}/api/v2/reservations'
 KITCHEN_URL = f'{BASE_URL}/1/functions/checkKitchen3'
 
-HEADERS = {
-    'Host': BASE_DOMAIN,
-    'Origin': BASE_URL,
-    'Referer': f'{BASE_URL}/login',
-    'Content-Type': 'application/json',
-}
-
 
 class MealPal:
 
     def __init__(self):
         self.session = requests.Session()
-        self.session.headers.update(HEADERS)
 
     def login(self, user, password):
         data = {
             'username': user,
             'password': password,
         }
-        request = self.session.post(LOGIN_URL, data=json.dumps(data))
+
+        headers = {
+            'Host': BASE_DOMAIN,
+            'Origin': BASE_URL,
+            'Referer': f'{BASE_URL}/login',
+            'Content-Type': 'application/json',
+        }
+
+        request = self.session.post(
+            LOGIN_URL,
+            json=data,
+            headers=headers,
+        )
 
         request.raise_for_status()
-
-        return request.status_code
 
     @staticmethod
     def get_cities():

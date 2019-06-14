@@ -12,7 +12,6 @@ from mealpy import config
 from mealpy.mealpy import MealPal
 
 CACHE_HOME = xdg.XDG_CACHE_HOME / 'mealpy'
-COOKIES_FILENAME = 'cookies.txt'
 
 
 @click.group()
@@ -132,7 +131,7 @@ def get_mealpal_credentials():
 
 
 def initialize_mealpal():
-    cookies_path = CACHE_HOME / COOKIES_FILENAME
+    cookies_path = CACHE_HOME / 'cookies.txt'
     mealpal = MealPal()
     mealpal.session.cookies = MozillaCookieJar()
 

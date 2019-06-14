@@ -125,7 +125,10 @@ class TestLogin:
 
         mealpal = mealpy.MealPal()
 
-        assert mealpal.login('username', 'password') == 200
+        # Assert no exceptions
+        mealpal.login('username', 'password')
+
+        # TODO: check side-effect of login, which is session cookies are persisted
 
     @staticmethod
     def test_login_fail(mock_responses):
